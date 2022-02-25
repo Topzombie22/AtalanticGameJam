@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
     public bool canLook;
     public bool canJump;
     public bool isGrounded;
+    public bool doubleJump;
+    public bool canDash;
 
 
     [Header("Vectors")]
@@ -37,7 +39,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     Vector3 input;
     public Vector3 speed;
-    float camYClamp;
 
     // Start is called before the first frame update
     void Start()
@@ -58,6 +59,7 @@ public class PlayerController : MonoBehaviour
         {
             MoveCamera();
         }
+        Dash();
     }
 
     void MovePlayer()
@@ -81,8 +83,23 @@ public class PlayerController : MonoBehaviour
         player.transform.Rotate(0, x, 0);
     }
 
+    void Dash()
+    {
+        if (canDash == true && Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            StartCoroutine(DashCo());
+            StartCoroutine(DashReset());
+        }
+    }
+
     void Jump()
     {
+        if (doubleJump == true && canJump == false && Input.GetKeyDown(KeyCode.Space))
+        {
+            doubleJump = false;
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.y);
+            rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+        }
 
         if (canJump == true && Input.GetKeyDown(KeyCode.Space))
         {
@@ -98,6 +115,7 @@ public class PlayerController : MonoBehaviour
             {
                 isGrounded = true;
                 canJump = true;
+                doubleJump = true;
             }
         }
         else
@@ -106,4 +124,26 @@ public class PlayerController : MonoBehaviour
             canJump = false;
         }
     }
+
+    IEnumerator DashCo()
+    {
+        canMove = false;
+        canDash = false;
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        Vector3 dashDir = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        rb.AddForce(dashDir * dashPower, ForceMode.Impulse);
+        rb.useGravity = false;
+        yield return new WaitForSeconds(0.25f);
+        rb.useGravity = true;
+        canDash = false;
+        canMove = true;
+        yield break;
+    }
+
+    IEnumerator DashReset()
+    {
+        yield return new WaitForSeconds(1.5f);
+        canDash = true;
+    }
+
 }

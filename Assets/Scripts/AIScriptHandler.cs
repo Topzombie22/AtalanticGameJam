@@ -12,8 +12,9 @@ public class AIScriptHandler : MonoBehaviour
         Spitter,
         Driller,
     }
-
-    private int aiChooser;
+    [SerializeField]
+    private GameObject player;
+    public int aiChooser;
     [SerializeField]
     private MonsterAI currentAI;
 
@@ -21,6 +22,7 @@ public class AIScriptHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        player = GameObject.Find("Player");
         AiSelector();
     }
 
@@ -32,7 +34,6 @@ public class AIScriptHandler : MonoBehaviour
 
     private void AiSelector()
     {
-        aiChooser = GetComponent<AISpawner>().mobType;
 
         switch (aiChooser)
         {
@@ -66,16 +67,25 @@ public class AIScriptHandler : MonoBehaviour
 
     private void Melee()
     {
-
+        var lookPos = player.transform.position - transform.position;
+        lookPos.y = 0;
+        var rotation = Quaternion.LookRotation(lookPos);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2f);
     }
 
     private void Spitter()
     {
-
+        var lookPos = player.transform.position - transform.position;
+        lookPos.y = 0;
+        var rotation = Quaternion.LookRotation(lookPos);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2f);
     }
 
     private void Driller()
     {
-
+        var lookPos = player.transform.position - transform.position;
+        lookPos.y = 0;
+        var rotation = Quaternion.LookRotation(lookPos);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2f);
     }
 }

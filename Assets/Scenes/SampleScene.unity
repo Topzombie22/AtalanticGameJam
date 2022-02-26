@@ -174,7 +174,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 263fc832c004e0342bbc60601f5db779, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -448,7 +448,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: fb4db7dfd45795c4cbefa217a8c1c52d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -527,12 +527,14 @@ MonoBehaviour:
   xSensativity: 5
   ySensativity: 5
   jumpHeight: 5
-  dashPower: 0
+  dashPower: 4
   sphereCastDist: 1
   canMove: 1
   canLook: 1
   canJump: 0
   isGrounded: 0
+  doubleJump: 0
+  canDash: 1
   playerMovement: {x: 0, y: 0, z: 0}
   input: {x: 0, y: 0, z: 0}
   speed: {x: 0, y: 0, z: 0}

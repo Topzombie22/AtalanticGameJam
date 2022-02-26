@@ -7,6 +7,7 @@ public class AISpawner : MonoBehaviour
 {
     public GameObject[] monsters;
     public GameObject player;
+    public GameObject gate;
     public int mobType;
     private int dist;
     [SerializeField]
@@ -132,13 +133,14 @@ public class AISpawner : MonoBehaviour
                 mobType = 5;
             }
         }
+        mobType = 4;
         MobSpawnHandler();
     }
 
     void MobSpawnHandler()
     {
 
-        if (mobType != 4 || mobType != 5)
+        if (mobType != 4 && mobType != 5)
         {
             Vector3 randomDirection = Random.insideUnitSphere * 20f;
             NavMeshHit hit;
@@ -146,7 +148,11 @@ public class AISpawner : MonoBehaviour
             var mob = Instantiate(monsters[0], hit.position, Quaternion.identity);
             mob.GetComponent<AIScriptHandler>().aiChooser = mobType;
         }
+        else if (mobType == 4)
+        {
+            var mob2 = Instantiate(monsters[1], gate.transform.position, Quaternion.identity);
+            mob2.GetComponent<AIScriptHandler>().aiChooser = mobType;
+        }
         timer = 100;
     }
-
 }

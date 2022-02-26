@@ -13,7 +13,12 @@ public class AISpawner : MonoBehaviour
     [SerializeField]
     private float timeChecker;
 
-    private float distVariable;
+    private bool Spawned;
+
+    private int attempts;
+
+    private float distVariableX;
+    private float distVariableZ;
 
     private int gameStage;
     private int mobQueue;
@@ -73,17 +78,20 @@ public class AISpawner : MonoBehaviour
             if (mobQueue >= 0 && mobQueue <= 89)
             {
                 mobType = 1;
-                distVariable = Random.Range(10, 30);
+                distVariableX = Random.Range(-20, 20);
+                distVariableZ = Random.Range(-20, 20);
             }
             else if (mobQueue >= 90 && mobQueue <= 159)
             {
                 mobType = 2;
-                distVariable = Random.Range(25, 80);
+                distVariableX = Random.Range(-60, 60);
+                distVariableZ = Random.Range(-60, 60);
             }
             else if (mobQueue >= 160 && mobQueue <= 200)
             {
                 mobType = 3;
-                distVariable = Random.Range(10, 80);
+                distVariableX = Random.Range(-60, 60);
+                distVariableZ = Random.Range(-60, 60);
             }
         }
         else if (gameStage == 1)
@@ -91,17 +99,20 @@ public class AISpawner : MonoBehaviour
             if (mobQueue >= 0 && mobQueue <= 79)
             {
                 mobType = 1;
-                distVariable = Random.Range(10, 30);
+                distVariableX = Random.Range(-20, 20);
+                distVariableZ = Random.Range(-20, 20);
             }
             else if (mobQueue >= 80 && mobQueue <= 139)
             {
                 mobType = 2;
-                distVariable = Random.Range(25, 80);
+                distVariableX = Random.Range(-60, 60);
+                distVariableZ = Random.Range(-60, 60);
             }
             else if (mobQueue >= 145 && mobQueue <= 179)
             {
                 mobType = 3;
-                distVariable = Random.Range(10, 80);
+                distVariableX = Random.Range(-60, 60);
+                distVariableZ = Random.Range(-60, 60);
             }
             else if (mobQueue >= 180 && mobQueue <= 200)
             {
@@ -113,17 +124,20 @@ public class AISpawner : MonoBehaviour
             if (mobQueue >= 0 && mobQueue <= 79)
             {
                 mobType = 1;
-                distVariable = Random.Range(10, 30);
+                distVariableX = Random.Range(-20, 20);
+                distVariableZ = Random.Range(-20, 20);
             }
             else if (mobQueue >= 80 && mobQueue <= 129)
             {
                 mobType = 2;
-                distVariable = Random.Range(25, 80);
+                distVariableX = Random.Range(-60, 60);
+                distVariableZ = Random.Range(-60, 60);
             }
             else if (mobQueue >= 130 && mobQueue <= 169)
             {
                 mobType = 3;
-                distVariable = Random.Range(10, 80);
+                distVariableX = Random.Range(-60, 60);
+                distVariableZ = Random.Range(-60, 60);
             }
             else if (mobQueue >= 170 && mobQueue <= 189)
             {
@@ -142,17 +156,57 @@ public class AISpawner : MonoBehaviour
 
         if (mobType != 4 && mobType != 5)
         {
-            Vector3 randomDirection = Random.insideUnitSphere * distVariable;
-            NavMeshHit hit;
-            NavMesh.SamplePosition(randomDirection, out hit, distVariable, 1);
-            var mob = Instantiate(monsters[0], hit.position, Quaternion.identity);
-            mob.GetComponent<AIScriptHandler>().aiChooser = mobType;
+            Vector3 randomDirection = new Vector3(player.transform.position.x + distVariableX, 8.6f, player.transform.position.z + distVariableZ);
+            RaycastHit hit;
+            if (Physics.Raycast(randomDirection, Vector3.down, out hit, 5f))
+            {
+                if (hit.collider.tag == "Ground" && attempts < 100)
+                {
+                    if (mobType == 1)
+                    {
+                        var mob = Instantiate(monsters[0], randomDirection, Quaternion.identity);
+                        mob.GetComponent<AIScriptHandler>().aiChooser = mobType;
+                    }
+                    if (mobType == 2)
+                    {
+                        var mob = Instantiate(monsters[2], randomDirection, Quaternion.identity);
+                        mob.GetComponent<AIScriptHandler>().aiChooser = mobType;
+                    }
+                    if (mobType == 3)
+                    {
+                        var mob = Instantiate(monsters[3], randomDirection, Quaternion.identity);
+                        mob.GetComponent<AIScriptHandler>().aiChooser = mobType;
+                    }
+                    Spawned = true;
+                    attempts++;
+                }
+                else if (hit.collider == null)
+                {
+                     
+                }
+                else if (attempts >= 100)
+                {
+                    attempts = 0;
+                    Spawned = true;
+                }
+            }
         }
         else if (mobType == 4)
         {
             var mob2 = Instantiate(monsters[1], gate.transform.position, Quaternion.identity);
             mob2.GetComponent<AIScriptHandler>().aiChooser = mobType;
+            Spawned = false;
+            timer = 100;
+            return;
         }
-        timer = 100;
+        if (Spawned != true)
+        {
+            MobsToSpawn();
+        }
+        else if (Spawned == true)
+        {
+            Spawned = false;
+            timer = 100;
+        }
     }
 }

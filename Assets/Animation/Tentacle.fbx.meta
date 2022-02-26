@@ -1,12 +1,17 @@
 fileFormatVersion: 2
-guid: 2ead15c36d0963e43a7650ea499b46aa
+guid: 551d34c7d492da143b5fd9fd40e44486
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
     second: Take 001
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GreenTenacles
+    second: {fileID: 2100000, guid: bf561ef4f62c4ab45aa68eb0fd88404f, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -26,10 +31,10 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 0
-    animationRotationError: 0
-    animationPositionError: 0
-    animationScaleError: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []

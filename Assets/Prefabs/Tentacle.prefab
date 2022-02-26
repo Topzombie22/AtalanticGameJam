@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1345814113064751975}
   - component: {fileID: 7341052180833583538}
+  - component: {fileID: 1984058215465043494}
   m_Layer: 0
   m_Name: Tentacle
   m_TagString: Untagged
@@ -148,7 +149,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1866348844315232733}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.799457, y: 0.5, z: 2.9260817}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1315539229586126473}
@@ -168,7 +169,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42f20cb77b676234d815c5486cf3448f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  rb: {fileID: 0}
+  aiChooser: 0
   currentAI: 0
+--- !u!95 &1984058215465043494
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866348844315232733}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1fa26219ff6fbe1479f23c80d4eed5eb, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2090009991317776702
 GameObject:
   m_ObjectHideFlags: 0

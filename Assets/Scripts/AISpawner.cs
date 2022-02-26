@@ -37,6 +37,7 @@ public class AISpawner : MonoBehaviour
     private void FixedUpdate()
     {
         SpawnMobs();
+        gameObject.transform.position = player.transform.position;
     }
 
     void SpawnMobs()
@@ -133,7 +134,6 @@ public class AISpawner : MonoBehaviour
                 mobType = 5;
             }
         }
-        mobType = 4;
         MobSpawnHandler();
     }
 
@@ -142,9 +142,9 @@ public class AISpawner : MonoBehaviour
 
         if (mobType != 4 && mobType != 5)
         {
-            Vector3 randomDirection = Random.insideUnitSphere * 20f;
+            Vector3 randomDirection = Random.insideUnitSphere * distVariable;
             NavMeshHit hit;
-            NavMesh.SamplePosition(randomDirection, out hit, 20f, 1);
+            NavMesh.SamplePosition(randomDirection, out hit, distVariable, 1);
             var mob = Instantiate(monsters[0], hit.position, Quaternion.identity);
             mob.GetComponent<AIScriptHandler>().aiChooser = mobType;
         }

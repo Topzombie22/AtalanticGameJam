@@ -14,6 +14,9 @@ public class AIScriptHandler : MonoBehaviour
         Bomber,
         TerrorFormer,
     }
+    public GameObject bomb;
+    private GameObject enemiesParent;
+    private GameObject gameManager;
     [SerializeField]
     private GameObject player;
     [SerializeField]
@@ -27,16 +30,40 @@ public class AIScriptHandler : MonoBehaviour
 
     private float deathTimer;
 
+    private NavMeshAgent agent;
+
     private bool attacking = false;
 
+    private bool justSpawned = true;
+
     private GameObject groundAnim;
+    [SerializeField]
+    private GameObject gooBall;
+    [SerializeField]
+    private GameObject gooBallTracker;
+
+    private Vector3 playerPos;
+
+    private bool underGround;
+    private bool monsterTimeout;
+    private bool timerStarted;
 
     private bool monsterSetup = false;
+    private bool hasShot;
+    private bool playerPosFound;
+
+    private bool collidersOff = false;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        if (GetComponent<NavMeshAgent>() != null)
+        {
+            agent = GetComponent<NavMeshAgent>();
+        }
+        enemiesParent = GameObject.Find("Enemies");
+        gameManager = GameObject.Find("GameManager");
         player = GameObject.Find("Player");
         groundAnim = GameObject.Find("GroundAnim");
         gate = GameObject.Find("Gate");
@@ -103,6 +130,13 @@ public class AIScriptHandler : MonoBehaviour
         {
             Bomber();
         }
+        if (deathTimer < 5)
+        {
+            GetComponent<Collider>().enabled = false;
+            currentAI = MonsterAI.None;
+            _anim.SetTrigger("Death");
+        }
+        deathTimer = deathTimer - 1 * Time.deltaTime;
     }
 
     private void Melee()
@@ -125,7 +159,7 @@ public class AIScriptHandler : MonoBehaviour
             StartCoroutine(Swing());
         }
     }
-
+     
     private void Spitter()
     {
         if (monsterSetup == false)
@@ -139,7 +173,35 @@ public class AIScriptHandler : MonoBehaviour
         lookPos.y = 0;
         var rotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2f);
+        if (attacking == false)
+        {
+            attacking = true;
+            StartCoroutine(Shoot());
+        }
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (gameObject.tag == "Bomb")
+        {
+            Instantiate(bomb, new Vector3(transform.position.x, transform.position.y + 6f, transform.position.z), Quaternion.identity);
+            Destroy(gameObject);
+        }
+
+        if (collision.gameObject.tag == "Player" && collidersOff == false)
+        {
+            gameManager.GetComponent<HealthTracker>().tookDamage = true;
+            gameManager.GetComponent<HealthTracker>().hit = true;
+            StartCoroutine(EnableColliders());
+            collidersOff = true;
+            foreach (Collider c in enemiesParent.GetComponentsInChildren<Collider>())
+            {
+                c.enabled = false;
+            }
+        }
+    }
+
+
 
     private void Driller()
     {
@@ -154,6 +216,15 @@ public class AIScriptHandler : MonoBehaviour
         lookPos.y = 0;
         var rotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2f);
+        if (attacking == true)
+        {
+            attacking = false;
+            StartCoroutine(Drill());
+        }
+        if (underGround == true)
+        {
+            agent.destination = player.transform.position;
+        }
     }
 
     private void Bomber()
@@ -177,5 +248,47 @@ public class AIScriptHandler : MonoBehaviour
         }
         yield return new WaitForSeconds(4f);
         attacking = false;
+    }
+
+    IEnumerator Shoot()
+    {
+        if (justSpawned == true)
+        {
+            yield return new WaitForSeconds(3f);
+            justSpawned = false;
+        }
+        _anim.SetTrigger("AttackThrow");
+        yield return new WaitForSeconds(0.75f);
+        Transform goopDispenser = gameObject.transform.GetChild(3);
+        Instantiate(gooBall, goopDispenser.position, Quaternion.identity);
+        StartCoroutine(ShotCooldown());
+    }
+
+    IEnumerator ShotCooldown()
+    {
+        yield return new WaitForSeconds(4f);
+        attacking = false;
+    }
+
+    IEnumerator Drill()
+    {
+        _anim.SetTrigger("StartBurrow");
+        yield return new WaitForSeconds(3f);
+        underGround = true;
+        yield return new WaitForSeconds(5f);
+        if (monsterTimeout == true)
+        {
+            yield break;
+        }
+    }
+
+    IEnumerator EnableColliders()
+    {
+        yield return new WaitForSeconds(4f);
+        foreach (Collider c in enemiesParent.GetComponentsInChildren<Collider>())
+        {
+            c.enabled = true;
+        }
+        collidersOff = false;
     }
 }

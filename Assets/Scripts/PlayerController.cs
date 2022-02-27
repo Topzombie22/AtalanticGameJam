@@ -5,9 +5,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Objects")]
+    public ParticleSystem sprite;
     public GameObject player;
     public GameObject cam;
     private Rigidbody rb;
+    private GameObject gameManager;
 
     [Header("Variables")]
     [SerializeField]
@@ -31,6 +33,7 @@ public class PlayerController : MonoBehaviour
     public bool isGrounded;
     public bool doubleJump;
     public bool canDash;
+    public bool inMenu;
 
 
     [Header("Vectors")]
@@ -43,8 +46,11 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var dd = sprite.emission;
+        dd.enabled = false;
         rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
+        gameManager = GameObject.Find("GameManager");
     }
 
     // Update is called once per frame
@@ -60,6 +66,7 @@ public class PlayerController : MonoBehaviour
             MoveCamera();
         }
         Dash();
+        PauseGame();
     }
 
     void MovePlayer()
@@ -68,6 +75,18 @@ public class PlayerController : MonoBehaviour
         playerMovement = transform.TransformDirection(input);
         rb.velocity = new Vector3(playerMovement.x, rb.velocity.y, playerMovement.z);
         speed = rb.velocity;
+    }
+
+    void PauseGame()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && inMenu == false)
+        {
+            gameManager.GetComponent<MenuController>().menu.SetActive(true);
+            canLook = false;
+            Time.timeScale = 0;
+            inMenu = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 
 
@@ -87,6 +106,9 @@ public class PlayerController : MonoBehaviour
     {
         if (canDash == true && Input.GetKeyDown(KeyCode.LeftShift))
         {
+            GetComponent<PlayerAudioManager>().PlayDash();
+            var dd = sprite.emission;
+            dd.enabled = true;
             StartCoroutine(DashCo());
             StartCoroutine(DashReset());
         }
@@ -99,6 +121,7 @@ public class PlayerController : MonoBehaviour
             doubleJump = false;
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.y);
             rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+            GetComponent<PlayerAudioManager>().PlayJump();
         }
 
         if (canJump == true && Input.GetKeyDown(KeyCode.Space))
@@ -106,6 +129,7 @@ public class PlayerController : MonoBehaviour
             canJump = false;
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.y);
             rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+            GetComponent<PlayerAudioManager>().PlayJump();
         }
 
         RaycastHit hit;
@@ -137,6 +161,8 @@ public class PlayerController : MonoBehaviour
         rb.useGravity = true;
         canDash = false;
         canMove = true;
+        var dd = sprite.emission;
+        dd.enabled = false; 
         yield break;
     }
 

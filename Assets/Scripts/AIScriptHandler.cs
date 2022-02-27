@@ -27,6 +27,8 @@ public class AIScriptHandler : MonoBehaviour
 
     private float deathTimer;
 
+    private NavMeshAgent agent;
+
     private bool attacking = false;
 
     private bool justSpawned = true;
@@ -38,6 +40,10 @@ public class AIScriptHandler : MonoBehaviour
     private GameObject gooBallTracker;
 
     private Vector3 playerPos;
+
+    private bool underGround = false;
+    private bool monsterTimeout;
+    private bool timerStarted;
 
     private bool monsterSetup = false;
     private bool hasShot;
@@ -66,6 +72,7 @@ public class AIScriptHandler : MonoBehaviour
             deathTimer = Random.Range(30f, 40f);
             Destroy(this.gameObject, deathTimer);
         }
+
         AiSelector();
     }
 
@@ -156,11 +163,6 @@ public class AIScriptHandler : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-
-    }
-
     private void Driller()
     {
         if (monsterSetup == false)
@@ -174,6 +176,28 @@ public class AIScriptHandler : MonoBehaviour
         lookPos.y = 0;
         var rotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2f);
+        if (attacking == false)
+        {
+            attacking = true;
+            StartCoroutine(Drill());
+        }
+        if (underGround == true)
+        {
+            Vector3 playPos = (new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z) - new Vector3(transform.position.x, transform.position.y, transform.position.z)).normalized;
+            Vector3 playPosFinal = new Vector3(playPos.x, 0f, playPos.z);
+            transform.Translate(playPosFinal * 7f * Time.deltaTime);
+            float dist = Vector3.Distance(player.transform.position, gameObject.transform.position);
+            if(dist <= 2f)
+            {
+                timerStarted = true;
+                StartCoroutine(DrillAttack());
+            }
+            if (timerStarted == false)
+            {
+                StartCoroutine(DrillerTimer());
+                timerStarted = true;
+            }
+        }
     }
 
     private void Bomber()
@@ -219,8 +243,33 @@ public class AIScriptHandler : MonoBehaviour
         attacking = false;
     }
 
+    IEnumerator DrillAttack()
+    {
+        _anim.SetTrigger("AttackBurrow");
+        underGround = false;
+        attacking = false;
+        timerStarted = false;
+        yield return new WaitForSeconds(3f);
+    }
+
+    IEnumerator DrillerTimer()
+    {
+        yield return new WaitForSeconds(5f);
+        if (attacking == false)
+        {
+            yield break;
+        }
+        _anim.SetTrigger("AttackBurrow");
+        yield return new WaitForSeconds(3f);
+        underGround = false;
+        attacking = false;
+        timerStarted = true;
+    }
+
     IEnumerator Drill()
     {
-        yield return new WaitForSeconds(1f);
+        _anim.SetTrigger("StartBurrow");
+        yield return new WaitForSeconds(1.25f);
+        underGround = true;
     }
 }

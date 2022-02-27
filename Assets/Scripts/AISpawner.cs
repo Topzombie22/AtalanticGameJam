@@ -148,6 +148,7 @@ public class AISpawner : MonoBehaviour
                 mobType = 5;
             }
         }
+        mobType = 3;
         MobSpawnHandler();
     }
 

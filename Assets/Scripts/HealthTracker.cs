@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class HealthTracker : MonoBehaviour
 {
+    public RawImage HP1;
+    public RawImage HP2;
+    public RawImage HP3;
     public int health;
     public bool dead;
     public RawImage hitEffect;
@@ -46,6 +49,35 @@ public class HealthTracker : MonoBehaviour
             invincible = true;
             health = health - 1;
             StartCoroutine(invulTimer());
+        }
+        HPHandle();
+    }
+
+    void HPHandle()
+    {
+        if (health == 3)
+        {
+            HP1.gameObject.SetActive(true);
+            HP2.gameObject.SetActive(false);
+            HP3.gameObject.SetActive(false);
+        }
+        if (health == 2)
+        {
+            HP1.gameObject.SetActive(false);
+            HP2.gameObject.SetActive(true);
+            HP3.gameObject.SetActive(false);
+        }
+        if (health == 1)
+        {
+            HP1.gameObject.SetActive(false);
+            HP2.gameObject.SetActive(false);
+            HP3.gameObject.SetActive(true);
+        }
+        if (health == 0)
+        {
+            HP1.gameObject.SetActive(false);
+            HP2.gameObject.SetActive(false);
+            HP3.gameObject.SetActive(false);
         }
     }
 

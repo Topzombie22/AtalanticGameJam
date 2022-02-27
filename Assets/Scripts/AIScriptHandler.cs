@@ -83,6 +83,10 @@ public class AIScriptHandler : MonoBehaviour
             deathTimer = Random.Range(30f, 40f);
             Destroy(this.gameObject, deathTimer);
         }
+        if (aiChooser == 4)
+        {
+            deathTimer = 50f;
+        }
         AiSelector();
     }
 

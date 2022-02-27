@@ -29,7 +29,10 @@ public class AISpawner : MonoBehaviour
 
     [SerializeField]
     private float timer = 100f;
-    private float timerDrain = 30f;
+    [SerializeField]
+    private float timerDrain = 20f;
+    float timer2 = 100;
+    private float timerDrain2 = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -45,18 +48,27 @@ public class AISpawner : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (timer2 >= 0.01 && timerDrain < 200f)
+        {
+            timer2 = timer2 - timerDrain2 * Time.deltaTime;
+        }
+        else if (timer2 < 0.01)
+        {
+            timerDrain += 5f;
+            timer2 = 100;
+        }
         SpawnMobs();
         gameObject.transform.position = player.transform.position;
     }
 
     void SpawnMobs()
     {
-        if (timeChecker >= 90)
+        if (timeChecker >= 60)
         {
             gameStage = 1;
         }
         
-        if (timeChecker >= 180)
+        if (timeChecker >= 120)
         {
             gameStage = 2;
         }

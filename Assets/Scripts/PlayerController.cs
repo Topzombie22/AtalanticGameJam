@@ -90,6 +90,7 @@ public class PlayerController : MonoBehaviour
     {
         if (canDash == true && Input.GetKeyDown(KeyCode.LeftShift))
         {
+            GetComponent<PlayerAudioManager>().PlayDash();
             var dd = sprite.emission;
             dd.enabled = true;
             StartCoroutine(DashCo());
@@ -104,6 +105,7 @@ public class PlayerController : MonoBehaviour
             doubleJump = false;
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.y);
             rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+            GetComponent<PlayerAudioManager>().PlayJump();
         }
 
         if (canJump == true && Input.GetKeyDown(KeyCode.Space))
@@ -111,6 +113,7 @@ public class PlayerController : MonoBehaviour
             canJump = false;
             rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.y);
             rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+            GetComponent<PlayerAudioManager>().PlayJump();
         }
 
         RaycastHit hit;

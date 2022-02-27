@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public GameObject player;
     public GameObject cam;
     private Rigidbody rb;
+    private GameObject gameManager;
 
     [Header("Variables")]
     [SerializeField]
@@ -32,6 +33,7 @@ public class PlayerController : MonoBehaviour
     public bool isGrounded;
     public bool doubleJump;
     public bool canDash;
+    public bool inMenu;
 
 
     [Header("Vectors")]
@@ -48,6 +50,7 @@ public class PlayerController : MonoBehaviour
         dd.enabled = false;
         rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
+        gameManager = GameObject.Find("GameManager");
     }
 
     // Update is called once per frame
@@ -63,6 +66,7 @@ public class PlayerController : MonoBehaviour
             MoveCamera();
         }
         Dash();
+        PauseGame();
     }
 
     void MovePlayer()
@@ -71,6 +75,18 @@ public class PlayerController : MonoBehaviour
         playerMovement = transform.TransformDirection(input);
         rb.velocity = new Vector3(playerMovement.x, rb.velocity.y, playerMovement.z);
         speed = rb.velocity;
+    }
+
+    void PauseGame()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && inMenu == false)
+        {
+            gameManager.GetComponent<MenuController>().menu.SetActive(true);
+            canLook = false;
+            Time.timeScale = 0;
+            inMenu = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 
 

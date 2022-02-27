@@ -6,7 +6,15 @@ using UnityEngine.SceneManagement;
 
 public class HealthTracker : MonoBehaviour
 {
+    public GameObject music;
+    public GameObject musicDestroy;
     public GameObject player;
+    public GameObject cam;
+    public GameObject enemies;
+    public RawImage cthulu;
+    public RawImage gameOver;
+    public RawImage playAgain;
+    public RawImage Quit;
     public RawImage HP1;
     public RawImage HP2;
     public RawImage HP3;
@@ -28,8 +36,11 @@ public class HealthTracker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Quit.canvasRenderer.SetAlpha(0);
+        playAgain.canvasRenderer.SetAlpha(0);
+        gameOver.canvasRenderer.SetAlpha(0);
+        cthulu.canvasRenderer.SetAlpha(0);
         deathEffect.canvasRenderer.SetAlpha(0);
-        GameOver.canvasRenderer.SetAlpha(0);
         hitEffect.canvasRenderer.SetAlpha(0);
         health = 3;
     }
@@ -94,10 +105,24 @@ public class HealthTracker : MonoBehaviour
 
     IEnumerator Death()
     {
+        GetComponent<Timer>().stopTimer = true;
+        Destroy(gameObject.GetComponent<AISpawner>());
+        music.SetActive(true);
+        Destroy(musicDestroy);
+        Destroy(enemies);
+        player.GetComponent<PlayerAudioManager>().enabled = false;
+        Cursor.lockState = CursorLockMode.None;
         deathEffect.CrossFadeAlpha(1f, 0.1f, false);
         yield return new WaitForSeconds(0.5f);
         deathEffect.CrossFadeColor(Color.black, 0.5f, false, true);
-        yield return new WaitForSeconds(2f);    
+        yield return new WaitForSeconds(0.5f);
+        cthulu.CrossFadeAlpha(1f, 1f, false);
+        yield return new WaitForSeconds(1f);
+        gameOver.CrossFadeAlpha(1, 1f, false);
+        yield return new WaitForSeconds(0.5f);
+        Quit.CrossFadeAlpha(1f, 1f, false);
+        playAgain.CrossFadeAlpha(1f, 1f, false);
+        GameOver.text = ("You survived for... " + Mathf.Round(GetComponent<Timer>().timer) + " Seconds");
     }
 
     IEnumerator invulTimer()

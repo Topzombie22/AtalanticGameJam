@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
 
     void PauseGame()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && inMenu == false)
+        if (Input.GetKeyDown(KeyCode.Escape) && inMenu == false && gameManager.GetComponent<HealthTracker>().dead != false)
         {
             gameManager.GetComponent<MenuController>().menu.SetActive(true);
             canLook = false;

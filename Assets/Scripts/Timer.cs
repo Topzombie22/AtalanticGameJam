@@ -10,6 +10,7 @@ public class Timer : MonoBehaviour
     public float timerdown = 6;
 
     private bool startTimer = false;
+    public bool stopTimer = false;
 
     // Start is called before the first frame update
     void Start()
@@ -33,7 +34,7 @@ public class Timer : MonoBehaviour
                 startTimer = true;
             }
         }
-        if (startTimer == true)
+        if (startTimer == true && stopTimer == false)
         {
             timer += 1 * Time.deltaTime;
 

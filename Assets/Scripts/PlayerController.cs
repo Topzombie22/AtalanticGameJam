@@ -143,7 +143,7 @@ public class PlayerController : MonoBehaviour
         canDash = false;
         canMove = true;
         var dd = sprite.emission;
-        dd.enabled = false;
+        dd.enabled = false; 
         yield break;
     }
 

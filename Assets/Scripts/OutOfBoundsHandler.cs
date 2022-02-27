@@ -26,7 +26,7 @@ public class OutOfBoundsHandler : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             player = other.gameObject;
-            gameManager.GetComponent<HealthTracker>().hit = true;
+            gameManager.GetComponent<HealthTracker>().hit = true; 
             StartCoroutine(Fade());
         }
     }

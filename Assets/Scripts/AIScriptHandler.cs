@@ -14,6 +14,7 @@ public class AIScriptHandler : MonoBehaviour
         Bomber,
         TerrorFormer,
     }
+    public GameObject bomb;
     private GameObject enemiesParent;
     private GameObject gameManager;
     [SerializeField]
@@ -157,7 +158,7 @@ public class AIScriptHandler : MonoBehaviour
             StartCoroutine(Swing());
         }
     }
-
+     
     private void Spitter()
     {
         if (monsterSetup == false)
@@ -180,9 +181,15 @@ public class AIScriptHandler : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (gameObject.tag == "Bomb")
+        {
+            Instantiate(bomb, new Vector3(transform.position.x, transform.position.y + 6f, transform.position.z), Quaternion.identity);
+            Destroy(gameObject);
+        }
+
         if (collision.gameObject.tag == "Player" && collidersOff == false)
         {
-            gameManager.GetComponent<HealthTracker>().health -= 1;
+            gameManager.GetComponent<HealthTracker>().tookDamage = true;
             gameManager.GetComponent<HealthTracker>().hit = true;
             StartCoroutine(EnableColliders());
             collidersOff = true;
@@ -192,6 +199,8 @@ public class AIScriptHandler : MonoBehaviour
             }
         }
     }
+
+
 
     private void Driller()
     {

@@ -29,9 +29,9 @@ public class GooBall : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider)
+        if (collision.collider.tag == "Player")  
         {
-            gameManager.GetComponent<HealthTracker>().health -= 1;
+            gameManager.GetComponent<HealthTracker>().tookDamage = true;
             gameManager.GetComponent<HealthTracker>().hit = true;
             Destroy(this.gameObject);
         }

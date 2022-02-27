@@ -10,6 +10,13 @@ public class HealthTracker : MonoBehaviour
     public RawImage hitEffect;
     public bool hit = false;
     private bool faded = false;
+    public bool invincible;
+    [SerializeField]
+    private bool oneMore;
+    public bool tookDamage;
+    [SerializeField]
+    float timer = 100;
+    float timerDrain = 25;
 
     // Start is called before the first frame update
     void Start()
@@ -34,11 +41,25 @@ public class HealthTracker : MonoBehaviour
         {
             hitEffect.CrossFadeAlpha(0f, 0.75f, false);
         }
+        if (tookDamage == true && invincible != true)
+        {
+            invincible = true;
+            health = health - 1;
+            StartCoroutine(invulTimer());
+        }
+    }
+
+    IEnumerator invulTimer()
+    {
+        yield return new WaitForSeconds(3f);
+        invincible = false;
+        tookDamage = false;
     }
     
     IEnumerator FadeBack()
     {
         yield return new WaitForSeconds(2f);
-        faded = hit = false;
+        hit = false;
+        yield return new WaitForSeconds(2f);
     }
 }

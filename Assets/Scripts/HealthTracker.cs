@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class HealthTracker : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class HealthTracker : MonoBehaviour
     public int health;
     public bool dead;
     public RawImage hitEffect;
+    public RawImage deathEffect;
+    public Text GameOver;
     public bool hit = false;
     private bool faded = false;
     public bool invincible;
@@ -24,6 +27,8 @@ public class HealthTracker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        deathEffect.canvasRenderer.SetAlpha(0);
+        GameOver.canvasRenderer.SetAlpha(0);
         hitEffect.canvasRenderer.SetAlpha(0);
         health = 3;
     }
@@ -34,6 +39,10 @@ public class HealthTracker : MonoBehaviour
         if (health <= 0)
         {
             dead = true;
+        }
+        if (dead == true)
+        {
+            StartCoroutine(Death());
         }
         if (hit == true)
         {
@@ -79,6 +88,15 @@ public class HealthTracker : MonoBehaviour
             HP2.gameObject.SetActive(false);
             HP3.gameObject.SetActive(false);
         }
+    }
+
+    IEnumerator Death()
+    {
+        deathEffect.CrossFadeAlpha(1f, 0.1f, false);
+        yield return new WaitForSeconds(0.5f);
+        deathEffect.CrossFadeColor(Color.black, 0.5f, false, true);
+        yield return new WaitForSeconds(2f);
+        SceneManager.LoadScene("SampleScene");
     }
 
     IEnumerator invulTimer()

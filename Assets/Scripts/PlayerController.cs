@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem sprite;
     public GameObject player;
     public GameObject cam;
+    public GameObject playerModel;
     private Rigidbody rb;
     private GameObject gameManager;
 
@@ -36,7 +37,7 @@ public class PlayerController : MonoBehaviour
     public bool inMenu;
 
     private bool started = false;
-    private float timer = 60f;
+    private float timer = 50f;
     private float timerCount = 10f; 
 
 
@@ -70,9 +71,10 @@ public class PlayerController : MonoBehaviour
                 started = true;
                 canMove = true;
                 canLook = true;
-                var brain = GetComponent<Cinemachine.CinemachineBrain>();
+                var brain = cam.gameObject.GetComponent<Cinemachine.CinemachineBrain>();
                 brain.enabled = false;
-                cam.transform.position = new Vector3(player.transform.position.x, 0.5f, player.transform.position.z);
+                playerModel.SetActive(false);
+                cam.transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 0.5f, player.transform.position.z);
             }
         }
         if (canMove)

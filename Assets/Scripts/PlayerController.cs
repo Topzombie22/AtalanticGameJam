@@ -35,6 +35,10 @@ public class PlayerController : MonoBehaviour
     public bool canDash;
     public bool inMenu;
 
+    private bool started = false;
+    private float timer = 60f;
+    private float timerCount = 10f; 
+
 
     [Header("Vectors")]
     [SerializeField]
@@ -46,6 +50,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        canMove = false;
+        canLook = false;
         var dd = sprite.emission;
         dd.enabled = false;
         rb = GetComponent<Rigidbody>();
@@ -56,6 +62,19 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (started != true)
+        {
+            timer = timer - timerCount * Time.deltaTime;
+            if(timer <= 0)
+            {
+                started = true;
+                canMove = true;
+                canLook = true;
+                var brain = GetComponent<Cinemachine.CinemachineBrain>();
+                brain.enabled = false;
+                cam.transform.position = new Vector3(player.transform.position.x, 0.5f, player.transform.position.z);
+            }
+        }
         if (canMove)
         {
             Jump();

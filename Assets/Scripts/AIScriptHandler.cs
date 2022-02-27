@@ -41,7 +41,7 @@ public class AIScriptHandler : MonoBehaviour
 
     private Vector3 playerPos;
 
-    private bool underGround = false;
+    private bool underGround;
     private bool monsterTimeout;
     private bool timerStarted;
 
@@ -185,7 +185,7 @@ public class AIScriptHandler : MonoBehaviour
         {
             Vector3 playPos = (new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z) - new Vector3(transform.position.x, transform.position.y, transform.position.z)).normalized;
             Vector3 playPosFinal = new Vector3(playPos.x, 0f, playPos.z);
-            transform.Translate(playPosFinal * 7f * Time.deltaTime);
+            transform.Translate(playPosFinal * 10f * Time.deltaTime);
             float dist = Vector3.Distance(player.transform.position, gameObject.transform.position);
             if(dist <= 2f)
             {
@@ -261,6 +261,10 @@ public class AIScriptHandler : MonoBehaviour
         }
         _anim.SetTrigger("AttackBurrow");
         yield return new WaitForSeconds(3f);
+        if (attacking == false)
+        {
+            yield break;
+        }
         underGround = false;
         attacking = false;
         timerStarted = true;
@@ -269,7 +273,7 @@ public class AIScriptHandler : MonoBehaviour
     IEnumerator Drill()
     {
         _anim.SetTrigger("StartBurrow");
-        yield return new WaitForSeconds(1.25f);
+        yield return new WaitForSeconds(5f);
         underGround = true;
     }
 }

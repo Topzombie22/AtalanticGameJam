@@ -29,9 +29,19 @@ public class AIScriptHandler : MonoBehaviour
 
     private bool attacking = false;
 
+    private bool justSpawned = true;
+
     private GameObject groundAnim;
+    [SerializeField]
+    private GameObject gooBall;
+    [SerializeField]
+    private GameObject gooBallTracker;
+
+    private Vector3 playerPos;
 
     private bool monsterSetup = false;
+    private bool hasShot;
+    private bool playerPosFound;
 
 
     // Start is called before the first frame update
@@ -139,6 +149,16 @@ public class AIScriptHandler : MonoBehaviour
         lookPos.y = 0;
         var rotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2f);
+        if (attacking == false)
+        {
+            attacking = true;
+            StartCoroutine(Shoot());
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+
     }
 
     private void Driller()
@@ -177,5 +197,30 @@ public class AIScriptHandler : MonoBehaviour
         }
         yield return new WaitForSeconds(4f);
         attacking = false;
+    }
+
+    IEnumerator Shoot()
+    {
+        if (justSpawned == true)
+        {
+            yield return new WaitForSeconds(3f);
+            justSpawned = false;
+        }
+        _anim.SetTrigger("AttackThrow");
+        yield return new WaitForSeconds(0.75f);
+        Transform goopDispenser = gameObject.transform.GetChild(3);
+        Instantiate(gooBall, goopDispenser.position, Quaternion.identity);
+        StartCoroutine(ShotCooldown());
+    }
+
+    IEnumerator ShotCooldown()
+    {
+        yield return new WaitForSeconds(4f);
+        attacking = false;
+    }
+
+    IEnumerator Drill()
+    {
+        yield return new WaitForSeconds(1f);
     }
 }

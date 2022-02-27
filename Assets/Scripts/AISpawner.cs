@@ -6,8 +6,10 @@ using UnityEngine.AI;
 public class AISpawner : MonoBehaviour
 {
     public GameObject[] monsters;
+    public GameObject enemies;
     public GameObject player;
     public GameObject gate;
+    public GameObject wallSpawner;
     public int mobType;
     private int dist;
     [SerializeField]
@@ -16,6 +18,8 @@ public class AISpawner : MonoBehaviour
     private bool Spawned;
 
     private int attempts;
+    [SerializeField]
+    private Vector3 dir;
 
     private float distVariableX;
     private float distVariableZ;
@@ -25,7 +29,7 @@ public class AISpawner : MonoBehaviour
 
     [SerializeField]
     private float timer = 100f;
-    private float timerDrain = 25f;
+    private float timerDrain = 30f;
 
     // Start is called before the first frame update
     void Start()
@@ -75,13 +79,28 @@ public class AISpawner : MonoBehaviour
     {
         if (gameStage == 0)
         {
-            if (mobQueue >= 0 && mobQueue <= 89)
+            if (mobQueue >= 0 && mobQueue <= 120)
             {
                 mobType = 1;
                 distVariableX = Random.Range(-20, 20);
                 distVariableZ = Random.Range(-20, 20);
             }
-            else if (mobQueue >= 90 && mobQueue <= 159)
+            else if (mobQueue >= 121 && mobQueue <= 200)
+            {
+                mobType = 2;
+                distVariableX = Random.Range(-60, 60);
+                distVariableZ = Random.Range(-60, 60);
+            }
+        }
+        else if (gameStage == 1)
+        {
+            if (mobQueue >= 0 && mobQueue <= 99)
+            {
+                mobType = 1;
+                distVariableX = Random.Range(-20, 20);
+                distVariableZ = Random.Range(-20, 20);
+            }
+            else if (mobQueue >= 100 && mobQueue <= 159)
             {
                 mobType = 2;
                 distVariableX = Random.Range(-60, 60);
@@ -89,12 +108,10 @@ public class AISpawner : MonoBehaviour
             }
             else if (mobQueue >= 160 && mobQueue <= 200)
             {
-                mobType = 3;
-                distVariableX = Random.Range(-60, 60);
-                distVariableZ = Random.Range(-60, 60);
+                mobType = 4;
             }
         }
-        else if (gameStage == 1)
+        else if (gameStage == 2)
         {
             if (mobQueue >= 0 && mobQueue <= 79)
             {
@@ -108,38 +125,7 @@ public class AISpawner : MonoBehaviour
                 distVariableX = Random.Range(-60, 60);
                 distVariableZ = Random.Range(-60, 60);
             }
-            else if (mobQueue >= 145 && mobQueue <= 179)
-            {
-                mobType = 3;
-                distVariableX = Random.Range(-60, 60);
-                distVariableZ = Random.Range(-60, 60);
-            }
-            else if (mobQueue >= 180 && mobQueue <= 200)
-            {
-                mobType = 4;
-            }
-        }
-        else if (gameStage == 2)
-        {
-            if (mobQueue >= 0 && mobQueue <= 79)
-            {
-                mobType = 1;
-                distVariableX = Random.Range(-20, 20);
-                distVariableZ = Random.Range(-20, 20);
-            }
-            else if (mobQueue >= 80 && mobQueue <= 129)
-            {
-                mobType = 2;
-                distVariableX = Random.Range(-60, 60);
-                distVariableZ = Random.Range(-60, 60);
-            }
-            else if (mobQueue >= 130 && mobQueue <= 169)
-            {
-                mobType = 3;
-                distVariableX = Random.Range(-60, 60);
-                distVariableZ = Random.Range(-60, 60);
-            }
-            else if (mobQueue >= 170 && mobQueue <= 189)
+            else if (mobQueue >= 140 && mobQueue <= 189)
             {
                 mobType = 4;
             }
@@ -148,7 +134,6 @@ public class AISpawner : MonoBehaviour
                 mobType = 5;
             }
         }
-        mobType = 3;
         MobSpawnHandler();
     }
 
@@ -165,17 +150,17 @@ public class AISpawner : MonoBehaviour
                 {
                     if (mobType == 1)
                     {
-                        var mob = Instantiate(monsters[0], randomDirection, Quaternion.identity);
+                        var mob = Instantiate(monsters[0], randomDirection, Quaternion.identity, enemies.transform);
                         mob.GetComponent<AIScriptHandler>().aiChooser = mobType;
                     }
                     if (mobType == 2)
                     {
-                        var mob = Instantiate(monsters[2], randomDirection, Quaternion.identity);
+                        var mob = Instantiate(monsters[2], randomDirection, Quaternion.identity, enemies.transform);
                         mob.GetComponent<AIScriptHandler>().aiChooser = mobType;
                     }
                     if (mobType == 3)
                     {
-                        var mob = Instantiate(monsters[3], randomDirection, Quaternion.identity);
+                        var mob = Instantiate(monsters[3], randomDirection, Quaternion.identity, enemies.transform);
                         mob.GetComponent<AIScriptHandler>().aiChooser = mobType;
                     }
                     Spawned = true;
@@ -194,11 +179,15 @@ public class AISpawner : MonoBehaviour
         }
         else if (mobType == 4)
         {
-            var mob2 = Instantiate(monsters[1], gate.transform.position, Quaternion.identity);
+            var mob2 = Instantiate(monsters[1], gate.transform.position, Quaternion.identity, enemies.transform);
             mob2.GetComponent<AIScriptHandler>().aiChooser = mobType;
             Spawned = false;
             timer = 100;
             return;
+        }
+        else if (mobType == 5)
+        {
+            StartCoroutine(WallSpawner());
         }
         if (Spawned != true)
         {
@@ -208,6 +197,42 @@ public class AISpawner : MonoBehaviour
         {
             Spawned = false;
             timer = 100;
+        }
+    }
+
+    IEnumerator WallSpawner() 
+    {
+        Spawned = true;
+        dir = (new Vector3(player.transform.position.x, 0, player.transform.position.z) - new Vector3(gate.transform.position.x, -10, gate.transform.position.z)).normalized;
+        var mobSpawner = Instantiate(wallSpawner, new Vector3(gate.transform.position.x, -10, gate.transform.position.z), Quaternion.identity);
+        Destroy(mobSpawner, 10f);
+        RaycastHit hit;
+        int j = 0;
+        int k = 0;
+        for (int i = 0; i < 25; i++)
+        {
+            if (dir.z < 0)
+            {
+                k *= -1;
+            }
+
+            mobSpawner.transform.position = new Vector3(dir.x * j , 10, dir.z * j);
+            if (Physics.Raycast(mobSpawner.transform.position, Vector3.down, out hit, 5f))
+            {
+                if (hit.collider.tag == "Ground")
+                {
+                    var mob3 = Instantiate(monsters[4], hit.point, Quaternion.identity, enemies.transform);
+                    Destroy(mob3, 10f);
+                }
+                else
+                {
+
+                }
+            }
+
+            j += 3;
+            k += 3;
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }

@@ -14,6 +14,8 @@ public class AIScriptHandler : MonoBehaviour
         Bomber,
         TerrorFormer,
     }
+    private GameObject enemiesParent;
+    private GameObject gameManager;
     [SerializeField]
     private GameObject player;
     [SerializeField]
@@ -49,10 +51,18 @@ public class AIScriptHandler : MonoBehaviour
     private bool hasShot;
     private bool playerPosFound;
 
+    private bool collidersOff = false;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        if (GetComponent<NavMeshAgent>() != null)
+        {
+            agent = GetComponent<NavMeshAgent>();
+        }
+        enemiesParent = GameObject.Find("Enemies");
+        gameManager = GameObject.Find("GameManager");
         player = GameObject.Find("Player");
         groundAnim = GameObject.Find("GroundAnim");
         gate = GameObject.Find("Gate");
@@ -72,7 +82,6 @@ public class AIScriptHandler : MonoBehaviour
             deathTimer = Random.Range(30f, 40f);
             Destroy(this.gameObject, deathTimer);
         }
-
         AiSelector();
     }
 
@@ -120,6 +129,12 @@ public class AIScriptHandler : MonoBehaviour
         {
             Bomber();
         }
+        if (deathTimer < 5)
+        {
+            currentAI = MonsterAI.None;
+            _anim.SetTrigger("Death");
+        }
+        deathTimer = deathTimer - 1 * Time.deltaTime;
     }
 
     private void Melee()
@@ -163,6 +178,21 @@ public class AIScriptHandler : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Player" && collidersOff == false)
+        {
+            gameManager.GetComponent<HealthTracker>().health -= 1;
+            gameManager.GetComponent<HealthTracker>().hit = true;
+            StartCoroutine(EnableColliders());
+            collidersOff = true;
+            foreach (Collider c in enemiesParent.GetComponentsInChildren<Collider>())
+            {
+                c.enabled = false;
+            }
+        }
+    }
+
     private void Driller()
     {
         if (monsterSetup == false)
@@ -176,27 +206,14 @@ public class AIScriptHandler : MonoBehaviour
         lookPos.y = 0;
         var rotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 2f);
-        if (attacking == false)
+        if (attacking == true)
         {
-            attacking = true;
+            attacking = false;
             StartCoroutine(Drill());
         }
         if (underGround == true)
         {
-            Vector3 playPos = (new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z) - new Vector3(transform.position.x, transform.position.y, transform.position.z)).normalized;
-            Vector3 playPosFinal = new Vector3(playPos.x, 0f, playPos.z);
-            transform.Translate(playPosFinal * 10f * Time.deltaTime);
-            float dist = Vector3.Distance(player.transform.position, gameObject.transform.position);
-            if(dist <= 2f)
-            {
-                timerStarted = true;
-                StartCoroutine(DrillAttack());
-            }
-            if (timerStarted == false)
-            {
-                StartCoroutine(DrillerTimer());
-                timerStarted = true;
-            }
+            agent.destination = player.transform.position;
         }
     }
 
@@ -243,37 +260,25 @@ public class AIScriptHandler : MonoBehaviour
         attacking = false;
     }
 
-    IEnumerator DrillAttack()
-    {
-        _anim.SetTrigger("AttackBurrow");
-        underGround = false;
-        attacking = false;
-        timerStarted = false;
-        yield return new WaitForSeconds(3f);
-    }
-
-    IEnumerator DrillerTimer()
-    {
-        yield return new WaitForSeconds(5f);
-        if (attacking == false)
-        {
-            yield break;
-        }
-        _anim.SetTrigger("AttackBurrow");
-        yield return new WaitForSeconds(3f);
-        if (attacking == false)
-        {
-            yield break;
-        }
-        underGround = false;
-        attacking = false;
-        timerStarted = true;
-    }
-
     IEnumerator Drill()
     {
         _anim.SetTrigger("StartBurrow");
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
         underGround = true;
+        yield return new WaitForSeconds(5f);
+        if (monsterTimeout == true)
+        {
+            yield break;
+        }
+    }
+
+    IEnumerator EnableColliders()
+    {
+        yield return new WaitForSeconds(4f);
+        foreach (Collider c in enemiesParent.GetComponentsInChildren<Collider>())
+        {
+            c.enabled = true;
+        }
+        collidersOff = false;
     }
 }

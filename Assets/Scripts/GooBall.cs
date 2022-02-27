@@ -5,10 +5,12 @@ using UnityEngine;
 public class GooBall : MonoBehaviour
 {
     public GameObject player;
+    private GameObject gameManager;
     Vector3 playerPos;
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("GameManager");
         player = GameObject.Find("Player");
         //  playerPos = new Vector3(player.transform.position.x, player.transform.position.y - 1f, player.transform.position.z);
         playerPos = (new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z) - new Vector3(transform.position.x, transform.position.y, transform.position.z)).normalized;
@@ -29,6 +31,8 @@ public class GooBall : MonoBehaviour
     {
         if (collision.collider)
         {
+            gameManager.GetComponent<HealthTracker>().health -= 1;
+            gameManager.GetComponent<HealthTracker>().hit = true;
             Destroy(this.gameObject);
         }
     }

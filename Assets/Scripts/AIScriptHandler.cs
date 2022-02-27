@@ -132,6 +132,7 @@ public class AIScriptHandler : MonoBehaviour
         }
         if (deathTimer < 5)
         {
+            GetComponent<Collider>().enabled = false;
             currentAI = MonsterAI.None;
             _anim.SetTrigger("Death");
         }

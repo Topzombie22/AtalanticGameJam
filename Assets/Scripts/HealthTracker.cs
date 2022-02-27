@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class HealthTracker : MonoBehaviour
 {
+    public GameObject player;
     public RawImage HP1;
     public RawImage HP2;
     public RawImage HP3;
@@ -57,6 +58,7 @@ public class HealthTracker : MonoBehaviour
         {
             invincible = true;
             health = health - 1;
+            player.GetComponent<PlayerAudioManager>().PlayDamage();
             StartCoroutine(invulTimer());
         }
         HPHandle();
@@ -95,8 +97,7 @@ public class HealthTracker : MonoBehaviour
         deathEffect.CrossFadeAlpha(1f, 0.1f, false);
         yield return new WaitForSeconds(0.5f);
         deathEffect.CrossFadeColor(Color.black, 0.5f, false, true);
-        yield return new WaitForSeconds(2f);
-        SceneManager.LoadScene("SampleScene");
+        yield return new WaitForSeconds(2f);    
     }
 
     IEnumerator invulTimer()

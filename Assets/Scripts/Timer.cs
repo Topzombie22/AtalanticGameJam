@@ -7,7 +7,9 @@ public class Timer : MonoBehaviour
 {
     public Text timerText;
     public float timer;
-    public bool startTimer;
+    public float timerdown = 6;
+
+    private bool startTimer = false;
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +25,14 @@ public class Timer : MonoBehaviour
 
     void TimeTracker()
     {
+        if (startTimer == false)
+        {
+            timerdown -= 1 * Time.deltaTime;
+            if (timerdown <= 0)
+            {
+                startTimer = true;
+            }
+        }
         if (startTimer == true)
         {
             timer += 1 * Time.deltaTime;

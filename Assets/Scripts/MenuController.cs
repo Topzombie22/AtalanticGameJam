@@ -52,4 +52,11 @@ public class MenuController : MonoBehaviour
         audioOff.SetActive(true);
         player.GetComponentInChildren<AudioListener>().enabled = false;
     }
+
+    public void Menu()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("MenuScene");
+
+    }
 }

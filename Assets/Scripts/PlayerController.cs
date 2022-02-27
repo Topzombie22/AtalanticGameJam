@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Objects")]
+    public ParticleSystem sprite;
     public GameObject player;
     public GameObject cam;
     private Rigidbody rb;
@@ -43,6 +44,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var dd = sprite.emission;
+        dd.enabled = false;
         rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -87,6 +90,8 @@ public class PlayerController : MonoBehaviour
     {
         if (canDash == true && Input.GetKeyDown(KeyCode.LeftShift))
         {
+            var dd = sprite.emission;
+            dd.enabled = true;
             StartCoroutine(DashCo());
             StartCoroutine(DashReset());
         }
@@ -137,6 +142,8 @@ public class PlayerController : MonoBehaviour
         rb.useGravity = true;
         canDash = false;
         canMove = true;
+        var dd = sprite.emission;
+        dd.enabled = false;
         yield break;
     }
 
